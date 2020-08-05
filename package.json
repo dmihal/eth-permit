@@ -1,0 +1,14 @@
+{
+  "name": "eth-permit",
+  "version": "0.1.0",
+  "description": "Sign permit messages for Ethereum tokens",
+  "main": "index.js",
+  "author": "David Mihal <david@dmihal.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  }
+}
