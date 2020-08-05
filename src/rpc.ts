@@ -8,8 +8,11 @@ export const send = (provider: any, method: string, params?: any[]) => new Promi
   }, (err: any, result: any) => {
     if (err) {
       reject(err);
+    } else if (result.error) {
+      console.error(result.error);
+      reject(result.error);
     } else {
-      resolve(result);
+      resolve(result.result);
     }
   }));
 
@@ -19,17 +22,18 @@ export interface RSV {
   v: number;
 }
 
-export const signData = async (provider: any, fromAddress: string, typeData: string): Promise<RSV> => {
-  const result = await send(provider, 'eth_signTypedData_v3', [fromAddress, typeData]);
-
+export const signData = async (provider: any, fromAddress: string, typeData: any): Promise<RSV> => {
+  const result = await send(provider, 'eth_signTypedData', [fromAddress, typeData]);
   return {
-    r: result.result.slice(0, 66),
-    s: '0x' + result.result.slice(66, 130),
-    v: parseInt(result.result.slice(130, 132), 16),
+    r: result.slice(0, 66),
+    s: '0x' + result.slice(66, 130),
+    v: parseInt(result.slice(130, 132), 16),
   };
 };
 
-export const chainId = (provider: any) => send(provider, 'eth_chainId');
+let chainIdOverride: null | number = null;
+export const setChainIdOverride = (id: number) => { chainIdOverride = id };
+export const chainId = async (provider: any): Promise<any> => chainIdOverride || send(provider, 'eth_chainId');
 
 export const call = (provider: any, to: string, data: string) => send(provider, 'eth_call', [{
   to,

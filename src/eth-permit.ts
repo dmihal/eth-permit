@@ -1,4 +1,5 @@
 import { chainId, call, signData, RSV } from './rpc';
+import { hexToUtf8 } from './lib';
 
 interface DaiPermitMessage {
   holder: string;
@@ -16,7 +17,7 @@ interface Domain {
 }
 
 const createTypedDaiData = (message: DaiPermitMessage, domain: Domain) => {
-  const typedData = JSON.stringify({
+  const typedData = {
     types: {
       EIP712Domain: [
         { name: "name", type: "string" },
@@ -35,7 +36,7 @@ const createTypedDaiData = (message: DaiPermitMessage, domain: Domain) => {
     primaryType: "Permit",
     domain,
     message: message,
-  });
+  };
 
   return typedData;
 };
@@ -44,6 +45,9 @@ const NONCES_FN = '0x7ecebe00';
 const NAME_FN = '0x06fdde03';
 
 const zeros = (numZeros: number) => ''.padEnd(numZeros, '0');
+
+const getTokenName = async (provider: any, address: string) =>
+  hexToUtf8((await call(provider, address, NAME_FN)).substr(130));
 
 export const signDaiPermit = async (
   provider: any,
@@ -64,7 +68,7 @@ export const signDaiPermit = async (
   };
 
   const domain: Domain = tokenAddress === token ? {
-    name: await call(provider, tokenAddress, NAME_FN),
+    name: await getTokenName(provider, tokenAddress),
     version: '1',
     chainId: await chainId(provider),
     verifyingContract: tokenAddress,
