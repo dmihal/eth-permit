@@ -1,10 +1,17 @@
 {
   "name": "eth-permit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Sign permit messages for Ethereum tokens",
   "main": "index.js",
   "author": "David Mihal <david@dmihal.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmihal/eth-permit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dmihal/eth-permit/issues"
+  },
   "scripts": {
     "build": "tsc",
     "test": "mocha -r ts-node/register test/\\*\\*/\\*.spec.ts"
