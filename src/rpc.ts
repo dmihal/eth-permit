@@ -33,7 +33,7 @@ export const signData = async (provider: any, fromAddress: string, typeData: any
 
 let chainIdOverride: null | number = null;
 export const setChainIdOverride = (id: number) => { chainIdOverride = id };
-export const chainId = async (provider: any): Promise<any> => chainIdOverride || send(provider, 'eth_chainId');
+export const getChainId = async (provider: any): Promise<any> => chainIdOverride || send(provider, 'eth_chainId');
 
 export const call = (provider: any, to: string, data: string) => send(provider, 'eth_call', [{
   to,
