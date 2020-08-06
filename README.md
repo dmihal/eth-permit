@@ -20,6 +20,8 @@ for signing both types of messages.
 
 Install the package `eth-permit` using npm or yarn.
 
+### Dai-style permits
+
 ```javascript
 import { signDaiPermit } from 'eth-permit';
 
@@ -28,6 +30,22 @@ import { signDaiPermit } from 'eth-permit';
 const result = await signDaiPermit(window.ethereum, tokenAddress, senderAddress, spender);
 
 await token.methods.permit(senderAddress, spender, result.nonce, result.expiry, true, result.v, result.r, result.s).send({
+  from: senderAddress,
+});
+```
+
+### ERC2612-style permits
+
+```javascript
+import { signERC2612Permit } from 'eth-permit';
+
+const value = web3.utils.toWei('1', 'ether');
+
+// Sign message using injected provider (ie Metamask).
+// You can replace window.ethereum with any other web3 provider.
+const result = await signERC2612Permit(window.ethereum, tokenAddress, senderAddress, spender, value);
+
+await token.methods.permit(senderAddress, spender, value, result.deadline, result.v, result.r, result.s).send({
   from: senderAddress,
 });
 ```
