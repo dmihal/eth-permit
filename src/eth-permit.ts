@@ -105,15 +105,17 @@ export const signDaiPermit = async (
   spender: string,
   expiry?: number,
   nonce?: number,
+  allowed?:boolean
 ): Promise<DaiPermitMessage & RSV> => {
   const tokenAddress = (token as Domain).verifyingContract || token as string;
-
+  if(allowed == undefined) allowed = true;
+  else allowed = false;
   const message: DaiPermitMessage = {
     holder,
     spender,
     nonce: nonce || await call(provider, tokenAddress, `${NONCES_FN}${zeros(24)}${holder.substr(2)}`),
     expiry: expiry || MAX_INT,
-    allowed: true,
+    allowed: allowed,
   };
 
   const domain = await getDomain(provider, token);

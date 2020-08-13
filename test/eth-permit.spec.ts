@@ -21,6 +21,28 @@ describe('ETH permit', () => {
 
     expect(await dai.methods.allowance(defaultSender, spender).call()).to.equal(MAX_INT);
   });
+  it('can take back permit on Dai', async () => {
+    const TestDai = contract.fromArtifact('TestDai');
+    const dai = await TestDai.deploy().send();
+
+    setChainIdOverride(1); // https://github.com/trufflesuite/ganache-core/issues/515
+
+    const result = await signDaiPermit(provider, dai._address, defaultSender, spender);
+    
+    await dai.methods.permit(defaultSender, spender, result.nonce, result.expiry, true, result.v, result.r, result.s).send({
+      from: defaultSender,
+    });
+
+    expect(await dai.methods.allowance(defaultSender, spender).call()).to.equal(MAX_INT);
+
+    const result1 = await signDaiPermit(provider, dai._address, defaultSender, spender, undefined, undefined, false);
+    
+    await dai.methods.permit(defaultSender, spender, result1.nonce, result1.expiry, false, result1.v, result1.r, result1.s).send({
+      from: defaultSender,
+    });
+
+    expect(await dai.methods.allowance(defaultSender, spender).call()).to.equal('0');
+  });
 
   it('can call permit on an ERC2612', async () => {
     const TestERC2612 = contract.fromArtifact('TestERC2612');
