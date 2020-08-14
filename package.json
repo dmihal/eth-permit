@@ -1,6 +1,6 @@
 {
   "name": "eth-permit",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Sign permit messages for Ethereum tokens",
   "main": "dist/eth-permit.js",
   "types": "dist/eth-permit.d.ts",
