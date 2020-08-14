@@ -17,10 +17,12 @@ export const send = (provider: any, method: string, params?: any[]) => new Promi
     }
   };
 
-  if (provider.sendAsync) {
-    provider.sendAsync(payload, callback);
+  let _provider = provider.provider || provider
+
+  if (_provider.sendAsync) {
+    _provider.sendAsync(payload, callback);
   } else {
-    provider.send(payload, callback);
+    _provider.send(payload, callback);
   }
 });
 
