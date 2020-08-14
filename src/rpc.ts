@@ -1,11 +1,12 @@
 const randomId = () => Math.floor(Math.random() * 10000000000);
 
-export const send = (provider: any, method: string, params?: any[]) => new Promise<any>((resolve, reject) =>
-  (provider.sendAsync || provider.send)({
+export const send = (provider: any, method: string, params?: any[]) => new Promise<any>((resolve, reject) => {
+  const payload = {
     id: randomId(),
     method,
     params,
-  }, (err: any, result: any) => {
+  };
+  const callback = (err: any, result: any) => {
     if (err) {
       reject(err);
     } else if (result.error) {
@@ -14,7 +15,14 @@ export const send = (provider: any, method: string, params?: any[]) => new Promi
     } else {
       resolve(result.result);
     }
-  }));
+  };
+
+  if (provider.sendAsync) {
+    provider.sendAsync(payload, callback);
+  } else {
+    provider.send(payload, callback);
+  }
+});
 
 export interface RSV {
   r: string;
