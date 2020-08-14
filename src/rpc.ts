@@ -1,7 +1,7 @@
 const randomId = () => Math.floor(Math.random() * 10000000000);
 
 export const send = (provider: any, method: string, params?: any[]) => new Promise<any>((resolve, reject) =>
-  provider.sendAsync({
+  (provider.sendAsync || provider.send)({
     id: randomId(),
     method,
     params,
@@ -23,7 +23,8 @@ export interface RSV {
 }
 
 export const signData = async (provider: any, fromAddress: string, typeData: any): Promise<RSV> => {
-  const result = await send(provider, 'eth_signTypedData', [fromAddress, typeData]);
+  const _typeData = typeof typeData === 'string' ? typeData : JSON.stringify(typeData);
+  const result = await send(provider, 'eth_signTypedData_v4', [fromAddress, _typeData]);
   return {
     r: result.slice(0, 66),
     s: '0x' + result.slice(66, 130),
