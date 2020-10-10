@@ -33,8 +33,8 @@ export interface RSV {
 }
 
 export const signData = async (provider: any, fromAddress: string, typeData: any): Promise<RSV> => {
-  const _typeData = typeof typeData === 'string' ? typeData : JSON.stringify(typeData);
-  const result = await send(provider, 'eth_signTypedData_v4', [fromAddress, _typeData]);
+  // const _typeData = typeof typeData === 'string' ? typeData : JSON.stringify(typeData);
+  const result = await send(provider, 'eth_signTypedData', [fromAddress, typeData]);
   return {
     r: result.slice(0, 66),
     s: '0x' + result.slice(66, 130),
