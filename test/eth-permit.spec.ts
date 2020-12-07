@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { defaultSender, provider, web3, contract } from '@openzeppelin/test-environment';
 import { signDaiPermit, signERC2612Permit } from '../src/eth-permit';
 import { setChainIdOverride } from '../src/rpc';
+import HDWalletProvider from '@truffle/hdwallet-provider';
 
 const spender = '0x0000000000000000000000000000000000000002';
 const MAX_INT = web3.utils.hexToNumberString('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff');
@@ -37,5 +38,27 @@ describe('ETH permit', () => {
     });
 
     expect(await token.methods.allowance(defaultSender, spender).call()).to.equal(value);
+  });
+
+  it('can call permit using HDWalletProvider an ERC2612', async () => {
+    const TestERC2612 = contract.fromArtifact('TestERC2612');
+    const token = await TestERC2612.deploy().send();
+
+    setChainIdOverride(1); // https://github.com/trufflesuite/ganache-core/issues/515
+
+    const value = '1000000000000000000';
+
+    const hdProvider = new HDWalletProvider(
+      'there finger wave drill party frost erosion isolate carpet van gallery column',
+      provider
+    );
+    const hdAddress = hdProvider.getAddress(0);
+    const result = await signERC2612Permit(hdProvider, token._address, hdAddress, spender, value);
+
+    await token.methods.permit(hdAddress, spender, value, result.deadline, result.v, result.r, result.s).send({
+      from: defaultSender,
+    });
+
+    expect(await token.methods.allowance(hdAddress, spender).call()).to.equal(value);
   });
 });

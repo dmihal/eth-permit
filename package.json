@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@openzeppelin/test-environment": "^0.1.4",
+    "@truffle/hdwallet-provider": "^1.2.0",
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.1",
     "@types/utf8": "^2.1.6",
