@@ -22,7 +22,19 @@ export const send = (provider: any, method: string, params?: any[]) => new Promi
   if (_provider.sendAsync) {
     _provider.sendAsync(payload, callback);
   } else {
-    _provider.send(payload, callback);
+    _provider.send(payload, callback).catch((error: any) => {
+      if (
+        error.message ===
+        "Hardhat Network doesn't support JSON-RPC params sent as an object"
+      ) {
+        _provider
+          .send(method, params)
+          .then((r: any) => resolve(r))
+          .catch((e: any) => reject(e));
+      } else {
+        throw error;
+      }
+    });
   }
 });
 
