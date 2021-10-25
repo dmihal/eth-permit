@@ -19,7 +19,12 @@ export const send = (provider: any, method: string, params?: any[]) => new Promi
 
   const _provider = provider.provider?.provider || provider.provider || provider
 
-  if (_provider.sendAsync) {
+  if (_provider.getUncheckedSigner /* ethers provider */) {
+    _provider
+      .send(method, params)
+      .then((r: any) => resolve(r))
+      .catch((e: any) => reject(e));
+  } else if (_provider.sendAsync) {
     _provider.sendAsync(payload, callback);
   } else {
     _provider.send(payload, callback).catch((error: any) => {
