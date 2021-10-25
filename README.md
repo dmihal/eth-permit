@@ -49,3 +49,22 @@ await token.methods.permit(senderAddress, spender, value, result.deadline, resul
   from: senderAddress,
 });
 ```
+
+### Ethers Wallet support
+
+The library now supports Ethers.js Wallet signers:
+
+```javascript
+import { signERC2612Permit } from 'eth-permit';
+
+const value = web3.utils.toWei('1', 'ether');
+
+const wallet = new ethers.Wallet(privateKey, new ethers.providers.JsonRpcProvider(rpcUrl));
+const senderAddress = await wallet.getAddress();
+
+const result = await signERC2612Permit(wallet, tokenAddress, senderAddress, spender, value);
+
+await token.methods.permit(senderAddress, spender, value, result.deadline, result.v, result.r, result.s).send({
+  from: senderAddress,
+});
+```

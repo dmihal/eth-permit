@@ -17,7 +17,7 @@ export const send = (provider: any, method: string, params?: any[]) => new Promi
     }
   };
 
-  let _provider = provider.provider || provider
+  const _provider = provider.provider?.provider || provider.provider || provider
 
   if (_provider.sendAsync) {
     _provider.sendAsync(payload, callback);
@@ -44,7 +44,32 @@ export interface RSV {
   v: number;
 }
 
+const splitSignatureToRSV = (signature: string): RSV => {
+  const r = '0x' + signature.substring(2).substring(0, 64);
+  const s = '0x' + signature.substring(2).substring(64, 128);
+  const v = parseInt(signature.substring(2).substring(128, 130), 16);
+  return { r, s, v };
+}
+
+const signWithEthers = async (signer: any, fromAddress: string, typeData: any): Promise<RSV> => {
+  const signerAddress = await signer.getAddress();
+  if (signerAddress.toLowerCase() !== fromAddress.toLowerCase()) {
+    throw new Error('Signer address does not match requested signing address');
+  }
+
+  const { EIP712Domain: _unused, ...types } = typeData.types;
+  const rawSignature = await (signer.signTypedData
+    ? signer.signTypedData(typeData.domain, types, typeData.message)
+    : signer._signTypedData(typeData.domain, types, typeData.message));
+
+  return splitSignatureToRSV(rawSignature);
+}
+
 export const signData = async (provider: any, fromAddress: string, typeData: any): Promise<RSV> => {
+  if (provider._signTypedData || provider.signTypedData) {
+    return signWithEthers(provider, fromAddress, typeData);
+  }
+
   const typeDataString = typeof typeData === 'string' ? typeData : JSON.stringify(typeData);
   const result = await send(provider, 'eth_signTypedData_v4', [fromAddress, typeDataString])
     .catch((error: any) => {
