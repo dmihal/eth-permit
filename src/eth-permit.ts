@@ -111,7 +111,7 @@ export const signDaiPermit = async (
   const message: DaiPermitMessage = {
     holder,
     spender,
-    nonce: nonce || await call(provider, tokenAddress, `${NONCES_FN}${zeros(24)}${holder.substr(2)}`),
+    nonce: nonce === undefined ? await call(provider, tokenAddress, `${NONCES_FN}${zeros(24)}${holder.substr(2)}`) : nonce,
     expiry: expiry || MAX_INT,
     allowed: true,
   };
@@ -138,7 +138,7 @@ export const signERC2612Permit = async (
     owner,
     spender,
     value,
-    nonce: nonce || await call(provider, tokenAddress, `${NONCES_FN}${zeros(24)}${owner.substr(2)}`),
+    nonce: nonce === undefined ? await call(provider, tokenAddress, `${NONCES_FN}${zeros(24)}${owner.substr(2)}`) : nonce,
     deadline: deadline || MAX_INT,
   };
 
