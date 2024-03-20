@@ -103,7 +103,7 @@ export const signDaiPermit = async (
   token: string | Domain,
   holder: string,
   spender: string,
-  expiry?: number,
+  expiry?: string | number,
   nonce?: number,
 ): Promise<DaiPermitMessage & RSV> => {
   const tokenAddress = (token as Domain).verifyingContract || token as string;
@@ -129,7 +129,7 @@ export const signERC2612Permit = async (
   owner: string,
   spender: string,
   value: string | number = MAX_INT,
-  deadline?: number,
+  deadline?: string | number,
   nonce?: number,
 ): Promise<ERC2612PermitMessage & RSV> => {
   const tokenAddress = (token as Domain).verifyingContract || token as string;
